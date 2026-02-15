@@ -7,28 +7,60 @@ $ClaudeDir = "$env:USERPROFILE\.claude"
 Write-Host "Installing myclaudeset from: $ScriptDir"
 Write-Host "Target: $ClaudeDir"
 
-# Backup existing config
-$dirs = @("skills", "commands", "rules", "agents")
-$hasExisting = $dirs | Where-Object { Test-Path "$ClaudeDir\$_" }
+New-Item -ItemType Directory -Path $ClaudeDir -Force | Out-Null
 
-if ($hasExisting -or (Test-Path "$ClaudeDir\settings.json")) {
-    $Backup = "$ClaudeDir\backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
-    Write-Host "Backing up existing config to: $Backup"
-    New-Item -ItemType Directory -Path $Backup -Force | Out-Null
-    foreach ($dir in $dirs) {
-        if (Test-Path "$ClaudeDir\$dir") {
-            Copy-Item -Recurse "$ClaudeDir\$dir" "$Backup\"
+$items = @("skills", "commands", "rules", "agents")
+
+# Check if already installed (symlinks pointing to this repo)
+$alreadyLinked = $true
+foreach ($dir in $items) {
+    $target = "$ClaudeDir\$dir"
+    if (Test-Path $target) {
+        $item = Get-Item $target -Force
+        if ($item.LinkType -eq "SymbolicLink" -and $item.Target -eq "$ScriptDir\$dir") {
+            continue
         }
     }
-    if (Test-Path "$ClaudeDir\settings.json") {
-        Copy-Item "$ClaudeDir\settings.json" "$Backup\"
+    $alreadyLinked = $false
+    break
+}
+
+if ($alreadyLinked) {
+    Write-Host "Already installed! Symlinks are correct."
+    Write-Host "Just use 'git pull' to sync updates - no need to re-install."
+    exit 0
+}
+
+# Backup existing config (only real dirs, skip symlinks)
+$needsBackup = $false
+foreach ($dir in $items) {
+    $target = "$ClaudeDir\$dir"
+    if ((Test-Path $target) -and -not ((Get-Item $target -Force).LinkType -eq "SymbolicLink")) {
+        $needsBackup = $true
+        break
     }
 }
 
-New-Item -ItemType Directory -Path $ClaudeDir -Force | Out-Null
+$settingsPath = "$ClaudeDir\settings.json"
+$settingsIsReal = (Test-Path $settingsPath) -and -not ((Get-Item $settingsPath -Force).LinkType -eq "SymbolicLink")
+
+if ($needsBackup -or $settingsIsReal) {
+    $Backup = "$ClaudeDir\backup-$(Get-Date -Format 'yyyyMMddHHmmss')"
+    Write-Host "Backing up existing config to: $Backup"
+    New-Item -ItemType Directory -Path $Backup -Force | Out-Null
+    foreach ($dir in $items) {
+        $target = "$ClaudeDir\$dir"
+        if ((Test-Path $target) -and -not ((Get-Item $target -Force).LinkType -eq "SymbolicLink")) {
+            Copy-Item -Recurse $target "$Backup\"
+        }
+    }
+    if ($settingsIsReal) {
+        Copy-Item $settingsPath "$Backup\"
+    }
+}
 
 # Remove existing and create symlinks (requires admin or developer mode)
-foreach ($dir in $dirs) {
+foreach ($dir in $items) {
     $target = "$ClaudeDir\$dir"
     if (Test-Path $target) { Remove-Item -Recurse -Force $target }
     New-Item -ItemType SymbolicLink -Path $target -Target "$ScriptDir\$dir" | Out-Null
@@ -36,11 +68,10 @@ foreach ($dir in $dirs) {
 }
 
 # Settings file
-$settingsTarget = "$ClaudeDir\settings.json"
-if (Test-Path $settingsTarget) { Remove-Item -Force $settingsTarget }
-New-Item -ItemType SymbolicLink -Path $settingsTarget -Target "$ScriptDir\settings.json" | Out-Null
+if (Test-Path $settingsPath) { Remove-Item -Force $settingsPath }
+New-Item -ItemType SymbolicLink -Path $settingsPath -Target "$ScriptDir\settings.json" | Out-Null
 Write-Host "  Linked: settings.json"
 
 Write-Host ""
 Write-Host "Done! Claude Code config is now synced from this repo."
-Write-Host "Pull this repo on any machine and run install.ps1 to sync."
+Write-Host "After this, just 'git pull' to get updates - no need to re-install."
