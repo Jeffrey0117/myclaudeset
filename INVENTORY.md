@@ -3,26 +3,26 @@
 完整內容清單。方便掌握這包有多大、缺什麼、該砍什麼。
 
 **最後更新：2026-02-15**
-**總計：186 files, ~1.1MB**
+**總計：~180 files, ~1.0MB**
 
 ---
 
-## Skills（15 套, 107 files, ~620K）
+## Skills（15 套, ~105 files, ~590K）
 
 | Skill | Files | Size | 用途 | 常用度 |
 |-------|-------|------|------|--------|
 | backend-patterns | 1 | 16K | Node.js / Express / API 設計 | ★★★ |
-| clickhouse-io | 1 | 12K | ClickHouse 查詢優化 | ★ |
 | coding-standards | 1 | 12K | TypeScript / JS 編碼規範 | ★★★ |
 | continuous-learning | 3 | 9K | 自動從 session 提取 patterns | ★★ |
-| eval-harness | 1 | 8K | 評估 harness | ★ |
+| **debugging** | 1 | 4K | 系統化除錯流程（新增） | ★★★ |
 | frontend-patterns | 1 | 16K | React / Next.js 前端模式 | ★★★ |
+| **git-advanced** | 1 | 4K | Rebase / cherry-pick / conflict（新增） | ★★★ |
 | payuni-sdk | 4 | 28K | 藍新金流 SDK 整合 | ★★ |
-| project-guidelines-example | 1 | 12K | 專案規範範例 | ★ |
 | remotion | 34 | 161K | Remotion 影片製作 | ★★ |
 | security-review | 1 | 16K | 安全審查 checklist | ★★★ |
 | strategic-compact | 2 | 8K | 智慧 context 壓縮建議 | ★★ |
 | tdd-workflow | 1 | 12K | 測試驅動開發流程 | ★★★ |
+| **telegram-bot** | 1 | 4K | Telegraf v4 Bot 開發模式（新增） | ★★★ |
 | vercel-react-best-practices | 54 | 310K | Vercel React 最佳實踐（最大） | ★★ |
 | verification-loop | 1 | 4K | 驗證迴圈 | ★★ |
 | web-design-guidelines | 1 | 4K | Web UI 設計準則 | ★★ |
@@ -31,7 +31,6 @@
 
 - `vercel-react-best-practices` 佔了總大小的一半（310K, 54 files），考慮是否真的常用
 - `remotion` 也很大（161K, 34 files），如果不常做影片可以考慮移除
-- `clickhouse-io` 和 `eval-harness` 使用頻率低，可考慮瘦身
 
 ---
 
@@ -123,7 +122,7 @@
 
 ---
 
-## Agents（9 files）
+## Agents（10 files）
 
 | Agent | 用途 |
 |-------|------|
@@ -136,6 +135,7 @@
 | e2e-runner | E2E 測試 |
 | refactor-cleaner | 死碼清理 |
 | doc-updater | 文檔更新 |
+| **performance-profiler** | 效能分析（新增） |
 
 ---
 
@@ -147,18 +147,19 @@
 |------|------|------|
 | vercel-react-best-practices | 310K | 佔一半，除非常寫 React |
 | remotion | 161K | 除非常做影片 |
-| clickhouse-io | 12K | 很少用到 |
-| eval-harness | 8K | 很少用到 |
-| project-guidelines-example | 12K | 只是範例 |
 
-砍完可省 ~500K（約 45%）。
+砍完可省 ~470K（約 47%）。
 
 ---
 
 ## 未來想加的
 
-- [ ] _（在這裡記錄你想加的 skill/command）_
+- [ ] docker / deployment skill
+- [ ] database patterns skill (PostgreSQL / Prisma)
+- [ ] migration-guide agent
 
 ## 已移除的
 
-- _（在這裡記錄移除過的項目和原因）_
+- `clickhouse-io` (12K) — 使用頻率低，2026-02-15 移除
+- `eval-harness` (8K) — 使用頻率低，2026-02-15 移除
+- `project-guidelines-example` (12K) — 只是範例無實用價值，2026-02-15 移除
